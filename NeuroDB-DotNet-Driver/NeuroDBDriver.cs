@@ -89,7 +89,9 @@ namespace NeuroDB_DotNet_Driver
 
             ResultSet resultSet = new ResultSet();
             byte[] receive = new byte[1];
-            char type = (char)this.s.Receive(receive);
+            int len=this.s.Receive(receive);
+            if(len==0) throw new Exception("network error");
+            char type = (char)receive[0];
             switch (type)
             {
                 case '@':
@@ -103,7 +105,7 @@ namespace NeuroDB_DotNet_Driver
                     break;
                 case '*':
                     String line = readLine(this.s);
-                    String[] head = line.Split(",");
+                    String[] head = line.Split(',');
                     resultSet.setStatus(int.Parse(head[0]));
                     resultSet.setCursor(int.Parse(head[1]));
                     resultSet.setResults(int.Parse(head[2]));
@@ -116,7 +118,7 @@ namespace NeuroDB_DotNet_Driver
 
                     int bodyLen = int.Parse(head[9]);
                     byte[] body = new byte[bodyLen];
-                    int len = this.s.Receive(body);
+                    len = this.s.Receive(body);
                     readLine(this.s);
                     RecordSet recordSet = deserializeReturnData(body);
                     resultSet.setRecordSet(recordSet);
