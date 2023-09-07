@@ -94,13 +94,15 @@ namespace NeuroDB_DotNet_Driver
             char type = (char)receive[0];
             switch (type)
             {
-                case '@':
+                case '@':/* 返回的是只有一个成功执行状态位的数据包*/
                     resultSet.setStatus(((int)ResultStatus.PARSER_OK));
                     break;
-                case '$':
+                case '$': /* 返回的是包含错误消息的报错数据包*/
+                    resultSet.setStatus(((int)ResultStatus.ERROR_INFO));
                     resultSet.setMsg(readLine(this.s));
                     break;
-                case '#':
+                case '#':/* 返回的是包含正常消息的消息数据包*/
+                    resultSet.setStatus(((int)ResultStatus.PARSER_OK));
                     resultSet.setMsg(readLine(this.s));
                     break;
                 case '*':
